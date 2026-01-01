@@ -11,6 +11,7 @@ import authRoutes from './routes/authRoutes.js';
 import tournamentRoutes from './routes/tournamentRoutes.js';
 import teamRoutes from './routes/teamRoutes.js';
 import registrationRoutes from './routes/registrationRoutes.js';
+import statsRoutes from './routes/statsRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -33,6 +34,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/tournaments', tournamentRoutes);
 app.use('/api/teams', teamRoutes);
 app.use('/api/tournaments/:tournamentId/registrations', registrationRoutes);
+app.use('/api/tournaments/:tournamentId/stats', statsRoutes);
 app.use('/api/tournaments/:tournamentId/register', (req, res, next) => {
   // Forward to registration route with POST
   if (req.method === 'POST') {
