@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int     @id @default(autoincrement())
+  email     String  @unique
+  username  String  @unique
+  password  String
+  role      String  @default("PLAYER") // UserRole: PLAYER, ORGANIZER, ADMIN
+  teamId    Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  team          Team? @relation("TeamMembers", fields: [teamId], references: [id], onDelete: SetNull)
+  organizedTournaments Tournament[] @relation("TournamentOrganizer")
+  registrations Registration[] @relation("RegistrationPlayer")
+  captainedTeams Team[] @relation("TeamCaptain")
+}
+
+model Tournament {
+  id               Int     @id @default(autoincrement())
+  name             String
+  game             String
+  format           String  // TournamentFormat: SOLO, TEAM
+  maxParticipants  Int
+  prizePool        Float
+  startDate        DateTime
+  endDate          DateTime?
+  status           String  @default("DRAFT") // TournamentStatus: DRAFT, OPEN, ONGOING, COMPLETED, CANCELLED
+  organizerId      Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  organizer        User @relation("TournamentOrganizer", fields: [organizerId], references: [id], onDelete: Cascade)
+  registrations    Registration[] @relation("TournamentRegistrations")
+
+  @@index([organizerId])
+}
+
+model Team {
+  id        Int     @id @default(autoincrement())
+  name      String  @unique
+  tag       String  @unique
+  captainId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  captain      User @relation("TeamCaptain", fields: [captainId], references: [id], onDelete: Cascade)
+  members      User[] @relation("TeamMembers")
+  registrations Registration[] @relation("TeamRegistrations")
+
+  @@index([captainId])
+}
+
+model Registration {
+  id           Int     @id @default(autoincrement())
+  tournamentId Int
+  playerId     Int?
+  teamId       Int?
+  status       String  @default("PENDING") // RegistrationStatus: PENDING, CONFIRMED, REJECTED, WITHDRAWN
+  registeredAt DateTime @default(now())
+  confirmedAt  DateTime?
+
+  // Relations
+  tournament   Tournament @relation("TournamentRegistrations", fields: [tournamentId], references: [id], onDelete: Cascade)
+  player       User? @relation("RegistrationPlayer", fields: [playerId], references: [id], onDelete: SetNull)
+  team         Team? @relation("TeamRegistrations", fields: [teamId], references: [id], onDelete: SetNull)
+
+  @@unique([tournamentId, playerId], name: "player_tournament_unique")
+  @@unique([tournamentId, teamId], name: "team_tournament_unique")
+  @@index([tournamentId])
+  @@index([playerId])
+  @@index([teamId])
+}
