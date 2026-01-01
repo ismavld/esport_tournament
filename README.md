@@ -9,6 +9,8 @@ API REST complète pour la gestion de tournois e-sport avec authentification, ge
 - [Utilisation](#utilisation)
 - [Architecture](#architecture)
 - [Documentation API](#documentation-api)
+- [Features Bonus](#features-bonus)
+- [Tests](#tests)
 
 ## 🚀 Installation
 
@@ -302,7 +304,112 @@ DELETE /api/tournaments/:tournamentId/registrations/:id
 Authorization: Bearer <token>
 ```
 
-## 🔐 Rôles et permissions
+### Statistiques
+
+#### Obtenir les statistiques d'un tournoi
+
+```http
+GET /api/tournaments/:tournamentId/stats
+Authorization: Bearer <token>
+```
+
+**Réponse (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "tournament": {
+      "id": "uuid",
+      "name": "CS:GO Championship",
+      "game": "Counter-Strike 2",
+      "status": "OPEN",
+      "format": "SOLO",
+      "maxParticipants": 64,
+      "startDate": "2026-02-01T10:00:00Z",
+      "endDate": "2026-02-15T18:00:00Z"
+    },
+    "registrations": {
+      "total": 32,
+      "statusBreakdown": {
+        "PENDING": 10,
+        "CONFIRMED": 20,
+        "REJECTED": 2,
+        "WITHDRAWN": 0
+      },
+      "confirmed": 20
+    },
+    "capacity": {
+      "max": 64,
+      "confirmed": 20,
+      "available": 44,
+      "percentageFilled": 31
+    },
+    "confirmedParticipants": [
+      {
+        "registrationId": "uuid",
+        "registrationDate": "2026-01-15T10:00:00Z",
+        "participant": {
+          "type": "PLAYER",
+          "id": "uuid",
+          "username": "player123",
+          "email": "player@example.com"
+        }
+      }
+    ]
+  }
+}
+```
+
+## ✨ Features Bonus
+
+### 1. 📚 Swagger OpenAPI Documentation
+
+L'API dispose d'une documentation interactive complète avec **Swagger UI**:
+
+```bash
+# Accéder à la documentation
+http://localhost:5000/api-docs
+```
+
+**Fonctionnalités:**
+- Documentation interactive de tous les endpoints
+- Bouton "Try it out" pour tester directement l'API
+- Schemas de réponse détaillés
+- Support de l'authentification Bearer token
+
+### 2. 📊 Endpoint Statistiques Tournoi
+
+Nouvel endpoint pour obtenir des statistiques complètes sur un tournoi:
+
+**Métriques disponibles:**
+- Total et breakdown des inscriptions (PENDING, CONFIRMED, REJECTED, WITHDRAWN)
+- Capacité et pourcentage d'occupation
+- Liste détaillée des participants confirmés
+- Informations du tournoi associé
+
+### 3. 🧪 Suite de Tests Vitest
+
+**23 tests** couvrant les services critiques:
+
+```bash
+npm run test              # Exécuter tous les tests
+npm run test:ui           # Interface visuelle des tests
+```
+
+**Suites de tests:**
+- **8 tests** - Service d'authentification (register, login, JWT)
+- **7 tests** - Service de tournois (CRUD, validations, transitions)
+- **8 tests** - Service d'équipes (CRUD, autorisation captain)
+
+**Couverture:**
+- ✅ Validation des entrées
+- ✅ Gestion des erreurs
+- ✅ Transitions d'état
+- ✅ Autorisation et permissions
+
+Voir [TESTS.md](./TESTS.md) pour plus de détails.
+
+## 🧪 Tests
 
 | Rôle | Permissions |
 |------|------------|
@@ -317,7 +424,11 @@ npm run test              # Lancer les tests
 npm run test:ui           # Interface de test interactive
 npm run test -- --coverage # Couverture de code
 ```
+**Test Framework:** Vitest  
+**Total Tests:** 23 tests  
+**Couverture:** Services d'authentification, tournois et équipes
 
+Voir [TESTS.md](./TESTS.md) pour la documentation complète des tests.
 ## 📝 Notes de développement
 
 - Tous les secrets (JWT_SECRET, DATABASE_URL) doivent être en `.env`
@@ -326,6 +437,31 @@ npm run test -- --coverage # Couverture de code
 - La validation des données utilise Zod
 - Gestion des erreurs centralisée avec middleware customisé
 - Migrations Prisma trackées avec Git
+- Documentation API interactive via Swagger UI
+- Tests automatisés avec Vitest
+
+## 📦 Points Implémentés
+
+**Core Features (20 points):**
+- ✅ Authentification (Register/Login) avec JWT
+- ✅ Gestion complète des tournois (CRUD + statuts)
+- ✅ Gestion des équipes avec authorisation
+- ✅ Système d'inscriptions avec validation
+- ✅ Architecture MVC
+- ✅ Validation des données (Zod)
+- ✅ Gestion des erreurs
+- ✅ Code de qualité professionnelle
+
+**Bonus Features (5 points):**
+- ✅ Documentation Swagger OpenAPI interactive (+1)
+- ✅ Endpoint statistiques tournoi (+1)
+- ✅ Suite de tests Vitest 23 tests (+2)
+- ⭐ Branches Git organisées (`feature/bonus-features`)
+
+## 🌿 Git Branches
+
+- `main` - Branch principale avec tous les commits
+- `feature/bonus-features` - Branch contenant les 3 features bonus
 
 ## 📄 Licence
 
@@ -333,4 +469,4 @@ MIT
 
 ## 👤 Auteur
 
-Votre Nom
+Ismail Valdez
