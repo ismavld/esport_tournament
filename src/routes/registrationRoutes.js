@@ -35,13 +35,13 @@ const router = express.Router({ mergeParams: true });
  *             type: object
  *             properties:
  *               playerId:
- *                 type: string
+ *                 type: number
  *                 description: Player ID (required for SOLO format tournaments)
  *               teamId:
- *                 type: string
+ *                 type: number
  *                 description: Team ID (required for TEAM format tournaments)
  *             example:
- *               playerId: "uuid-here"
+ *               playerId: 1
  *     responses:
  *       201:
  *         description: Registration created successfully with PENDING status
