@@ -1,10 +1,16 @@
 import 'dotenv/config';
 import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import prisma from './utils/prisma.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { swaggerSpec } from './config/swagger.js';
+
+// ES modules fix for __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Import routes
 import authRoutes from './routes/authRoutes.js';
@@ -21,12 +27,20 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, '../public')));
+
 // Swagger documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routes
 app.get('/api/health', (req, res) => {
   res.json({ status: 'API is running', timestamp: new Date().toISOString() });
+});
+
+// Home route
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 // API Routes
