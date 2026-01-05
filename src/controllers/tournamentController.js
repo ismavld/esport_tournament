@@ -36,7 +36,7 @@ export const getOneTournament = asyncHandler(async (req, res) => {
  * Create a tournament
  */
 export const createNewTournament = asyncHandler(async (req, res) => {
-  const tournament = await createTournament(req.body, req.user.id);
+  const tournament = await createTournament({ ...req.body, organizerId: req.user.id });
   res.status(201).json(tournament);
 });
 

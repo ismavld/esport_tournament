@@ -27,7 +27,7 @@ export const getOneTeam = asyncHandler(async (req, res) => {
  * Create a team
  */
 export const createNewTeam = asyncHandler(async (req, res) => {
-  const team = await createTeam(req.body, req.user.id);
+  const team = await createTeam({ ...req.body, captainId: req.user.id });
   res.status(201).json(team);
 });
 
@@ -35,7 +35,7 @@ export const createNewTeam = asyncHandler(async (req, res) => {
  * Update a team
  */
 export const updateExistingTeam = asyncHandler(async (req, res) => {
-  const team = await updateTeam(req.params.id, req.body, req.user.id);
+  const team = await updateTeam(parseInt(req.params.id), req.user.id, req.body);
   res.json(team);
 });
 

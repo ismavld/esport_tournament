@@ -44,8 +44,13 @@ export const getTournaments = async (filters) => {
  * Get a single tournament by ID
  */
 export const getTournamentById = async (id) => {
+  const numId = parseInt(id);
+  if (isNaN(numId)) {
+    throw new ApiError(404, 'Tournament not found');
+  }
+  
   const tournament = await prisma.tournament.findUnique({
-    where: { id: parseInt(id) },
+    where: { id: numId },
     include: {
       organizer: {
         select: { id: true, username: true, email: true },
@@ -69,8 +74,8 @@ export const getTournamentById = async (id) => {
 /**
  * Create a new tournament
  */
-export const createTournament = async (data, organizerId) => {
-  const { name, game, format, maxParticipants, prizePool, startDate, endDate } = data;
+export const createTournament = async (data) => {
+  const { name, game, format, maxParticipants, prizePool, startDate, endDate, organizerId } = data;
 
   // Validate startDate is in the future
   if (new Date(startDate) <= new Date()) {
@@ -188,7 +193,7 @@ export const deleteTournament = async (id, userId, userRole) => {
 /**
  * Update tournament status with validation
  */
-export const updateTournamentStatus = async (id, newStatus, userId, userRole) => {
+export const updateTournamentStatus = async (id, newStatus, userId, userRole = 'ORGANIZER') => {
   const tournament = await prisma.tournament.findUnique({
     where: { id: parseInt(id) },
     include: {
@@ -247,3 +252,7 @@ export const updateTournamentStatus = async (id, newStatus, userId, userRole) =>
 
   return updated;
 };
+
+// Alias for getTournamentById for compatibility
+export const getTournament = getTournamentById;
+

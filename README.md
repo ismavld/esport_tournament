@@ -460,13 +460,13 @@ Voir [TESTS.md](./TESTS.md) pour la documentation complète des tests.
 
 ## 🌿 Git Branches
 
-- `main` - Branch principale avec tous les commits
-- `feature/bonus-features` - Branch contenant les 3 features bonus
+- `main/v0` - ancienne version obsolète.
+- `Main/bonus-features` - Branch principale contenant les 3 features bonus
 
-## 📄 Licence
+## 📄 École
 
-MIT
+Hesias
 
 ## 👤 Auteur
 
-Ismail Valdez
+Ismaël Villaldea

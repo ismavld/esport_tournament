@@ -7,7 +7,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 export const register = asyncHandler(async (req, res) => {
   const { email, username, password, role } = req.body;
 
-  const { user, token } = await registerUser({ email, username, password, role });
+  const { user, token } = await registerUser(email, username, password, role);
 
   res.status(201).json({
     message: 'User registered successfully',

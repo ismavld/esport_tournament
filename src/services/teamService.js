@@ -24,8 +24,13 @@ export const getTeams = async () => {
  * Get a single team by ID
  */
 export const getTeamById = async (id) => {
+  const numId = parseInt(id);
+  if (isNaN(numId)) {
+    throw new ApiError(404, 'Team not found');
+  }
+  
   const team = await prisma.team.findUnique({
-    where: { id: parseInt(id) },
+    where: { id: numId },
     include: {
       captain: {
         select: { id: true, username: true, email: true, role: true },
@@ -46,13 +51,22 @@ export const getTeamById = async (id) => {
 /**
  * Create a new team
  */
-export const createTeam = async (data, userId) => {
-  const { name, tag } = data;
+export const createTeam = async (data) => {
+  const { name, tag, captainId } = data;
+
+  // Validate tag is uppercase
+  if (tag !== tag.toUpperCase()) {
+    throw new ApiError(400, 'Team tag must be uppercase');
+  }
 
   // Get user to verify role
   const user = await prisma.user.findUnique({
-    where: { id: userId },
+    where: { id: captainId },
   });
+
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
 
   if (user.role !== 'PLAYER') {
     throw new ApiError(400, 'Only players can create teams');
@@ -63,7 +77,7 @@ export const createTeam = async (data, userId) => {
     data: {
       name,
       tag,
-      captainId: userId,
+      captainId,
     },
     include: {
       captain: {
@@ -81,9 +95,9 @@ export const createTeam = async (data, userId) => {
 /**
  * Update a team
  */
-export const updateTeam = async (id, data, userId) => {
+export const updateTeam = async (id, userId, data) => {
   const team = await prisma.team.findUnique({
-    where: { id: parseInt(id) },
+    where: { id },
   });
 
   if (!team) {
@@ -92,11 +106,11 @@ export const updateTeam = async (id, data, userId) => {
 
   // Check authorization - only captain can modify
   if (team.captainId !== userId) {
-    throw new ApiError(403, 'Only the team captain can modify this team');
+    throw new ApiError(403, 'You are not authorized to modify this team');
   }
 
   const updated = await prisma.team.update({
-    where: { id: parseInt(id) },
+    where: { id },
     data,
     include: {
       captain: {
@@ -162,3 +176,7 @@ export const deleteTeam = async (id, userId) => {
 
   return { message: 'Team deleted successfully' };
 };
+
+// Alias for getTeamById for compatibility
+export const getTeam = getTeamById;
+

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, afterEach, vi } from 'vitest';
 import { createTeam, getTeam, updateTeam } from '../src/services/teamService.js';
 import { registerUser } from '../src/services/authService.js';
 import prisma from '../src/utils/prisma.js';
@@ -27,14 +27,21 @@ describe('Team Service', () => {
     captainId = result.user.id;
   });
 
-  afterEach(async () => {
-    // Clean up test teams
-    await prisma.team.deleteMany({
-      where: { captainId },
+  afterAll(async () => {
+    // Clean up test user
+    await prisma.user.deleteMany({
+      where: { id: captainId },
     });
   });
 
   describe('createTeam', () => {
+    afterEach(async () => {
+      // Clean up test teams after each test
+      await prisma.team.deleteMany({
+        where: { captainId },
+      });
+    });
+
     it('should successfully create a team', async () => {
       const team = await createTeam({
         name: 'Test Team',
@@ -87,6 +94,13 @@ describe('Team Service', () => {
       teamId = team.id;
     });
 
+    afterAll(async () => {
+      // Clean up test team after all tests in this suite
+      await prisma.team.deleteMany({
+        where: { id: teamId },
+      });
+    });
+
     it('should successfully retrieve a team', async () => {
       const team = await getTeam(teamId);
 
@@ -109,6 +123,13 @@ describe('Team Service', () => {
         captainId,
       });
       teamId = team.id;
+    });
+
+    afterAll(async () => {
+      // Clean up test team after all tests in this suite
+      await prisma.team.deleteMany({
+        where: { id: teamId },
+      });
     });
 
     it('should successfully update team name', async () => {
@@ -140,6 +161,11 @@ describe('Team Service', () => {
           name: 'Hacked Name',
         })
       ).rejects.toThrow('You are not authorized');
+
+      // Clean up other user
+      await prisma.user.deleteMany({
+        where: { id: otherUserResult.user.id },
+      });
     });
   });
 });

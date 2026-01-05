@@ -9,9 +9,7 @@ const JWT_EXPIRE = process.env.JWT_EXPIRE || '24h';
 /**
  * Register a new user
  */
-export const registerUser = async (data) => {
-  const { email, username, password, role } = data;
-
+export const registerUser = async (email, username, password, role = 'PLAYER') => {
   // Check if user already exists
   const existingUser = await prisma.user.findFirst({
     where: {

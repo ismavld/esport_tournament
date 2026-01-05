@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
 import bcrypt from 'bcrypt';
 import { registerUser, loginUser } from '../src/services/authService.js';
 import prisma from '../src/utils/prisma.js';
@@ -14,23 +14,29 @@ vi.mock('bcrypt', () => ({
 }));
 
 describe('Authentication Service', () => {
-  const testEmail = `test-${Date.now()}@example.com`;
-  const testUsername = `testuser${Date.now()}`;
-  const testPassword = 'Password123';
-
-  afterEach(async () => {
-    // Clean up test data
-    await prisma.user.deleteMany({
-      where: {
-        OR: [
-          { email: testEmail },
-          { username: testUsername },
-        ],
-      },
-    });
-  });
-
   describe('registerUser', () => {
+    let testEmail;
+    let testUsername;
+    const testPassword = 'Password123';
+
+    beforeEach(() => {
+      testEmail = `test-${Date.now()}-${Math.random()}@example.com`;
+      testUsername = `testuser${Date.now()}-${Math.random()}`;
+    });
+
+    afterEach(async () => {
+      // Clean up test data
+      await prisma.user.deleteMany({
+        where: {
+          OR: [
+            { email: testEmail },
+            { email: { contains: testEmail.split('-')[1] } },
+            { username: { contains: testUsername.split('-')[0] } },
+          ],
+        },
+      });
+    });
+
     it('should successfully register a new user with mocked bcrypt', async () => {
       // Since bcrypt is mocked, we can test without native bindings
       const result = await registerUser(testEmail, testUsername, testPassword);
@@ -64,8 +70,24 @@ describe('Authentication Service', () => {
   });
 
   describe('loginUser', () => {
+    const testEmail = `logintest-${Date.now()}@example.com`;
+    const testUsername = `loginuser${Date.now()}`;
+    const testPassword = 'Password123';
+
     beforeAll(async () => {
       await registerUser(testEmail, testUsername, testPassword);
+    });
+
+    afterAll(async () => {
+      // Clean up test data for login tests
+      await prisma.user.deleteMany({
+        where: {
+          OR: [
+            { email: testEmail },
+            { username: testUsername },
+          ],
+        },
+      });
     });
 
     it('should successfully login with correct credentials', async () => {
