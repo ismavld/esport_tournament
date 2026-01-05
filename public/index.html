@@ -340,10 +340,26 @@
 
     async function viewStats(tournamentId) {
       try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          alert('❌ Erreur: Vous devez être connecté');
+          return;
+        }
+
         const response = await fetch(`${API_URL}/tournaments/${tournamentId}/stats`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+          method: 'GET',
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
         });
+        
         const result = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(result.error?.message || 'Erreur lors du chargement des statistiques');
+        }
+
         const stats = result.data;
 
         alert(`
@@ -357,7 +373,7 @@ Total inscriptions: ${stats.registrations.total}
 Capacité: ${stats.capacity.confirmed}/${stats.capacity.max} (${stats.capacity.percentageFilled}%)
         `);
       } catch (error) {
-        alert('❌ Erreur: Vous devez être connecté');
+        alert('❌ Erreur: ' + error.message);
       }
     }
 
