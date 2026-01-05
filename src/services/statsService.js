@@ -7,8 +7,10 @@ import { ApiError } from '../middlewares/errorHandler.js';
  * @returns {Object} Tournament statistics
  */
 export const getTournamentStats = async (tournamentId) => {
+  const id = parseInt(tournamentId);
+  
   const tournament = await prisma.tournament.findUnique({
-    where: { id: tournamentId },
+    where: { id },
     include: {
       registrations: true,
     },
@@ -41,7 +43,7 @@ export const getTournamentStats = async (tournamentId) => {
   // Get confirmed participants details
   const confirmedParticipants = await prisma.registration.findMany({
     where: {
-      tournamentId: tournamentId,
+      tournamentId: id,
       status: 'CONFIRMED',
     },
     include: {
