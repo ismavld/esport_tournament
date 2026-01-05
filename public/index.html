@@ -314,15 +314,15 @@
 
         const result = await response.json();
 
-        if (result.data) {
-          localStorage.setItem('token', result.data.token);
-          localStorage.setItem('user', JSON.stringify(result.data.user));
+        if (result.token && result.user) {
+          localStorage.setItem('token', result.token);
+          localStorage.setItem('user', JSON.stringify(result.user));
           document.getElementById('auth-message').innerHTML =
             '<div class="alert alert-success">✅ Connexion réussie!</div>';
           setTimeout(() => checkAuth(), 500);
         } else {
           document.getElementById('auth-message').innerHTML =
-            '<div class="alert alert-error">❌ ' + (result.error?.message || 'Erreur de connexion') + '</div>';
+            '<div class="alert alert-error">❌ ' + (result.error?.message || result.message || 'Erreur de connexion') + '</div>';
         }
       } catch (error) {
         document.getElementById('auth-message').innerHTML =
