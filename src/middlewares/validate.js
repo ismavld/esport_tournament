@@ -15,11 +15,10 @@ export const validate = (schema, source = 'body') => {
       // Replace the original data with validated data
       if (source === 'body') {
         req.body = validated;
-      } else if (source === 'query') {
-        req.query = validated;
-      } else {
+      } else if (source === 'params') {
         req.params = validated;
       }
+      // Note: req.query is read-only, so we don't reassign it
 
       next();
     } catch (error) {
