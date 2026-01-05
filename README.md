@@ -469,4 +469,4 @@ Hesias
 
 ## 👤 Auteur
 
-Ismaël Villaldea
+Ismaël Villaldea (avec github copilot, on est en 2026 quand même)
