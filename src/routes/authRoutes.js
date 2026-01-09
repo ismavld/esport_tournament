@@ -48,7 +48,11 @@ const router = express.Router();
  *                 user:
  *                   $ref: '#/components/schemas/User'
  *       400:
- *         $ref: '#/components/responses/BadRequest'
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.post('/register', validate(registerSchema, 'body'), register);
 
@@ -86,7 +90,11 @@ router.post('/register', validate(registerSchema, 'body'), register);
  *                 user:
  *                   $ref: '#/components/schemas/User'
  *       401:
- *         $ref: '#/components/responses/Unauthorized'
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.post('/login', validate(loginSchema, 'body'), login);
 

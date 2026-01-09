@@ -26,6 +26,8 @@ model User {
   organizedTournaments Tournament[] @relation("TournamentOrganizer")
   registrations Registration[] @relation("RegistrationPlayer")
   captainedTeams Team[] @relation("TeamCaptain")
+
+  @@index([teamId])
 }
 
 model Tournament {

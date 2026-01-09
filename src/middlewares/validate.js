@@ -22,7 +22,7 @@ export const validate = (schema, source = 'body') => {
 
       next();
     } catch (error) {
-      if (error instanceof z.ZodError) {
+      if (error instanceof z.ZodError && error.errors) {
         const formattedErrors = error.errors.map((err) => ({
           field: err.path.join('.'),
           message: err.message,
