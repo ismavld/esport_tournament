@@ -54,6 +54,10 @@ app.get('/connexion', (req, res) => {
   res.render('pages/connexion');
 });
 
+app.get('/profil', (req, res) => {
+  res.render('pages/profil');
+});
+
 // Routes
 app.get('/api/health', (req, res) => {
   res.json({ status: 'API is running', timestamp: new Date().toISOString() });

@@ -1,0 +1,118 @@
+<%- include('../partials/header', { page: 'profile', title: 'Profil - E-Sport Tournaments' }) %>
+
+      <div class="page-header">
+        <h1>👤 Mon Profil</h1>
+        <p>Informations de votre compte</p>
+      </div>
+
+      <div id="profile-content" style="display: none;">
+        <div class="card">
+          <div class="card-title">👥 Informations Utilisateur</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 16px;">
+            <div>
+              <label style="font-weight: 500; color: #666;">ID:</label>
+              <p id="user-id" style="font-size: 1.1em; color: #1f2937; margin-top: 4px;">-</p>
+            </div>
+            <div>
+              <label style="font-weight: 500; color: #666;">Rôle:</label>
+              <p id="user-role" style="font-size: 1.1em; color: #1f2937; margin-top: 4px;">-</p>
+            </div>
+            <div>
+              <label style="font-weight: 500; color: #666;">Email:</label>
+              <p id="user-email" style="font-size: 1.1em; color: #1f2937; margin-top: 4px;">-</p>
+            </div>
+            <div>
+              <label style="font-weight: 500; color: #666;">Nom d'utilisateur:</label>
+              <p id="user-username" style="font-size: 1.1em; color: #1f2937; margin-top: 4px;">-</p>
+            </div>
+            <div>
+              <label style="font-weight: 500; color: #666;">Inscrit le:</label>
+              <p id="user-created" style="font-size: 1.1em; color: #1f2937; margin-top: 4px;">-</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔐 Token JWT</div>
+          <p style="color: #666; margin-bottom: 12px;">Votre token d'authentification (valide 24h):</p>
+          <div style="background: #f3f4f6; padding: 12px; border-radius: 6px; word-break: break-all; font-family: monospace; font-size: 0.85em; color: #1f2937; margin-bottom: 12px;" id="user-token">
+            -
+          </div>
+          <button class="btn btn-secondary" onclick="copyToClipboard()" style="margin-right: 8px;">📋 Copier le Token</button>
+          <span id="copy-feedback" style="color: #10b981; font-size: 0.9em; display: none;">✅ Copié!</span>
+        </div>
+
+        <div class="card">
+          <div class="card-title">⚙️ Actions</div>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="logout()">🚪 Se Déconnecter</button>
+            <a href="/connexion" class="btn btn-secondary">🔄 Changer de Compte</a>
+          </div>
+        </div>
+      </div>
+
+      <div id="not-connected" style="display: none;">
+        <div class="card">
+          <div class="card-title">⚠️ Non Connecté</div>
+          <p style="margin-bottom: 16px;">Vous devez être connecté pour accéder à votre profil.</p>
+          <a href="/connexion" class="btn btn-primary">Se Connecter</a>
+        </div>
+      </div>
+
+      <script>
+        function formatDate(dateString) {
+          const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+          return new Date(dateString).toLocaleDateString('fr-FR', options);
+        }
+
+        function copyToClipboard() {
+          const token = document.getElementById('user-token').textContent;
+          navigator.clipboard.writeText(token).then(() => {
+            const feedback = document.getElementById('copy-feedback');
+            feedback.style.display = 'inline';
+            setTimeout(() => {
+              feedback.style.display = 'none';
+            }, 2000);
+          });
+        }
+
+        function logout() {
+          if (confirm('Êtes-vous sûr de vouloir vous déconnecter?')) {
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+            window.location.href = '/connexion';
+          }
+        }
+
+        function loadProfile() {
+          const userStr = localStorage.getItem('user');
+          const token = localStorage.getItem('token');
+
+          if (!userStr || !token) {
+            document.getElementById('profile-content').style.display = 'none';
+            document.getElementById('not-connected').style.display = 'block';
+            return;
+          }
+
+          try {
+            const user = JSON.parse(userStr);
+            document.getElementById('profile-content').style.display = 'block';
+            document.getElementById('not-connected').style.display = 'none';
+
+            document.getElementById('user-id').textContent = user.id;
+            document.getElementById('user-email').textContent = user.email;
+            document.getElementById('user-username').textContent = user.username;
+            document.getElementById('user-role').textContent = user.role;
+            document.getElementById('user-created').textContent = formatDate(user.createdAt);
+            document.getElementById('user-token').textContent = token;
+          } catch (error) {
+            console.error('Error loading profile:', error);
+            document.getElementById('profile-content').style.display = 'none';
+            document.getElementById('not-connected').style.display = 'block';
+          }
+        }
+
+        loadProfile();
+      </script>
+
+<%- include('../partials/footer') %>

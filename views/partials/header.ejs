@@ -18,9 +18,41 @@
           <a href="/" class="nav-link <%= page === 'home' ? 'active' : '' %>">Accueil</a>
           <a href="/tournois" class="nav-link <%= page === 'tournaments' ? 'active' : '' %>">Tournois</a>
           <a href="/equipes" class="nav-link <%= page === 'teams' ? 'active' : '' %>">Équipes</a>
-          <a href="/connexion" class="nav-link <%= page === 'auth' ? 'active' : '' %>">Connexion</a>
+          <a href="#" id="auth-link" class="nav-link" onclick="goToAuth(event)">Connexion</a>
         </nav>
       </div>
     </header>
 
     <main class="main-content">
+
+    <script>
+      function goToAuth(event) {
+        event.preventDefault();
+        const token = localStorage.getItem('token');
+        if (token) {
+          window.location.href = '/profil';
+        } else {
+          window.location.href = '/connexion';
+        }
+      }
+
+      function updateAuthLink() {
+        const token = localStorage.getItem('token');
+        const authLink = document.getElementById('auth-link');
+        const currentPage = '<%= page %>';
+        
+        if (token) {
+          authLink.textContent = '👤 Profil';
+          authLink.classList.toggle('active', currentPage === 'profile');
+        } else {
+          authLink.textContent = '🔐 Connexion';
+          authLink.classList.toggle('active', currentPage === 'auth');
+        }
+      }
+
+      // Update on page load
+      updateAuthLink();
+
+      // Listen for storage changes (logout from another tab)
+      window.addEventListener('storage', updateAuthLink);
+    </script>

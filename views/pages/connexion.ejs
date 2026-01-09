@@ -103,6 +103,51 @@
           registerForm.style.display = registerForm.style.display === 'none' ? 'block' : 'none';
         }
 
+        // Handle Login
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const message = document.getElementById('message');
+          
+          try {
+            const response = await fetch('/api/auth/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: document.getElementById('login-email').value,
+                password: document.getElementById('login-password').value
+              })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+              // Store user and token in localStorage
+              localStorage.setItem('user', JSON.stringify(data.user));
+              localStorage.setItem('token', data.token);
+              
+              message.style.backgroundColor = '#dcfce7';
+              message.style.color = '#166534';
+              message.textContent = '✅ Connexion réussie! Redirection...';
+              message.style.display = 'block';
+              
+              setTimeout(() => {
+                window.location.href = '/profil';
+              }, 1500);
+            } else {
+              message.style.backgroundColor = '#fee2e2';
+              message.style.color = '#991b1b';
+              message.textContent = '❌ ' + (data.error?.message || 'Erreur lors de la connexion');
+              message.style.display = 'block';
+            }
+          } catch (error) {
+            message.style.backgroundColor = '#fee2e2';
+            message.style.color = '#991b1b';
+            message.textContent = '❌ Erreur de connexion';
+            message.style.display = 'block';
+          }
+        });
+
+        // Handle Registration
         document.getElementById('register-form').addEventListener('submit', async (e) => {
           e.preventDefault();
           const message = document.getElementById('message');
