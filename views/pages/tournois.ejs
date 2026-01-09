@@ -2,117 +2,17 @@
 
       <div class="page-header">
         <h1>🏆 Tournois</h1>
-        <p>Découvrez et gérez tous les tournois e-sport disponibles</p>
-      </div>
-
-      <!-- Toast Notification -->
-      <div id="notification" style="display: none; position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 6px; font-weight: bold; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <p>Découvrez tous les tournois e-sport en cours</p>
       </div>
 
       <div class="card">
-        <div class="card-title">📋 Liste des Tournois</div>
-        <p>Les tournois seront chargés depuis l'API.</p>
+        <div class="card-title">📋 Tournois en cours</div>
         <div id="tournaments-list" style="margin-top: 20px;">
           <p style="color: #888;">Chargement des tournois...</p>
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-title">➕ Créer un Tournoi</div>
-        <div id="tournament-create">
-          <p style="margin-bottom: 20px;">Pour créer un tournoi, vous devez être connecté en tant qu'organisateur.</p>
-          <a href="/connexion" class="btn btn-primary">Se Connecter pour Créer</a>
-        </div>
-        <div id="tournament-create-form" style="display: none;">
-          <form id="create-tournament-form">
-            <div class="form-group">
-              <label for="tournament-name">Nom du Tournoi:</label>
-              <input type="text" id="tournament-name" name="name" required />
-            </div>
-            <div class="form-group">
-              <label for="tournament-game">Jeu:</label>
-              <input type="text" id="tournament-game" name="game" placeholder="ex: Counter-Strike 2" required />
-            </div>
-            <div class="form-group">
-              <label for="tournament-format">Format:</label>
-              <select id="tournament-format" name="format" required>
-                <option value="SOLO">Solo</option>
-                <option value="TEAM">Équipe</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="tournament-maxp">Participants Max:</label>
-              <input type="number" id="tournament-maxp" name="maxParticipants" min="1" required />
-            </div>
-            <div class="form-group">
-              <label for="tournament-pool">Prize Pool:</label>
-              <input type="number" id="tournament-pool" name="prizePool" min="0" step="0.01" required />
-            </div>
-            <div class="form-group">
-              <label for="tournament-start">Date de Début:</label>
-              <input type="datetime-local" id="tournament-start" name="startDate" required />
-            </div>
-            <button type="submit" class="btn btn-primary">Créer le Tournoi</button>
-          </form>
-        </div>
-      </div>
-
       <script>
-        function showNotification(message, isSuccess = true) {
-          const notification = document.getElementById('notification');
-          notification.textContent = message;
-          notification.style.display = 'block';
-          notification.style.backgroundColor = isSuccess ? '#10b981' : '#ef4444';
-          notification.style.color = 'white';
-          
-          setTimeout(() => {
-            notification.style.display = 'none';
-          }, 3000);
-        }
-
-        async function createTournament(e) {
-          e.preventDefault();
-          
-          const token = localStorage.getItem('token');
-          if (!token) {
-            showNotification('❌ Vous devez être connecté pour créer un tournoi', false);
-            return;
-          }
-
-          const formData = {
-            name: document.getElementById('tournament-name').value,
-            game: document.getElementById('tournament-game').value,
-            format: document.getElementById('tournament-format').value,
-            maxParticipants: parseInt(document.getElementById('tournament-maxp').value),
-            prizePool: parseFloat(document.getElementById('tournament-pool').value),
-            startDate: new Date(document.getElementById('tournament-start').value).toISOString()
-          };
-
-          try {
-            const response = await fetch('/api/tournaments', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-              },
-              body: JSON.stringify(formData)
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-              showNotification('✅ Tournoi créé avec succès!', true);
-              document.getElementById('create-tournament-form').reset();
-              loadTournaments();
-            } else {
-              showNotification(`❌ Erreur: ${data.message || 'Impossible de créer le tournoi'}`, false);
-            }
-          } catch (error) {
-            console.error('Error:', error);
-            showNotification('❌ Erreur réseau: ' + error.message, false);
-          }
-        }
-
         async function loadTournaments() {
           try {
             const response = await fetch('/api/tournaments/public/all');
@@ -136,40 +36,8 @@
           }
         }
 
-        function updateTournamentUI() {
-          const token = localStorage.getItem('token');
-          const user = localStorage.getItem('user');
-          
-          const createSection = document.getElementById('tournament-create');
-          const createForm = document.getElementById('tournament-create-form');
-          
-          if (token && user) {
-            try {
-              const userObj = JSON.parse(user);
-              if (userObj.role === 'ORGANIZER' || userObj.role === 'ADMIN') {
-                createSection.style.display = 'none';
-                createForm.style.display = 'block';
-                return;
-              }
-            } catch (e) {
-              console.error('Error parsing user:', e);
-            }
-          }
-          
-          // Default: show login message
-          createSection.style.display = 'block';
-          createForm.style.display = 'none';
-        }
-
-        // Attach form submit handler
-        document.getElementById('create-tournament-form').addEventListener('submit', createTournament);
-
         loadTournaments();
-        updateTournamentUI();
-        window.addEventListener('storage', () => {
-          loadTournaments();
-          updateTournamentUI();
-        });
+        window.addEventListener('storage', loadTournaments);
       </script>
 
 <%- include('../partials/footer') %>
