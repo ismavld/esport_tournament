@@ -1,5 +1,9 @@
 <%- include('../partials/header', { page: 'teams', title: 'Équipes - E-Sport Tournaments' }) %>
 
+      <!-- Toast Notification -->
+      <div id="notification" style="display: none; position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 6px; font-weight: bold; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+      </div>
+
       <div class="page-header">
         <h1>👥 Équipes</h1>
         <p>Gestion et découverte des équipes e-sport</p>
@@ -35,6 +39,57 @@
       </div>
 
       <script>
+        function showNotification(message, isSuccess = true) {
+          const notification = document.getElementById('notification');
+          notification.textContent = message;
+          notification.style.display = 'block';
+          notification.style.backgroundColor = isSuccess ? '#10b981' : '#ef4444';
+          notification.style.color = 'white';
+          
+          setTimeout(() => {
+            notification.style.display = 'none';
+          }, 3000);
+        }
+
+        async function createTeam(e) {
+          e.preventDefault();
+          
+          const token = localStorage.getItem('token');
+          if (!token) {
+            showNotification('❌ Vous devez être connecté pour créer une équipe', false);
+            return;
+          }
+
+          const formData = {
+            name: document.getElementById('team-name').value,
+            tag: document.getElementById('team-tag').value
+          };
+
+          try {
+            const response = await fetch('/api/teams', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+              showNotification('✅ Équipe créée avec succès!', true);
+              document.getElementById('create-team-form').reset();
+              loadTeams();
+            } else {
+              showNotification(`❌ Erreur: ${data.message || 'Impossible de créer l\'équipe'}`, false);
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            showNotification('❌ Erreur réseau: ' + error.message, false);
+          }
+        }
+
         async function loadTeams() {
           try {
             const response = await fetch('/api/teams/public/all');
@@ -71,6 +126,9 @@
             createForm.style.display = 'none';
           }
         }
+
+        // Attach form submit handler
+        document.getElementById('create-team-form').addEventListener('submit', createTeam);
 
         loadTeams();
         updateTeamUI();

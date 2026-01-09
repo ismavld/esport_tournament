@@ -5,6 +5,10 @@
         <p>Découvrez et gérez tous les tournois e-sport disponibles</p>
       </div>
 
+      <!-- Toast Notification -->
+      <div id="notification" style="display: none; position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 6px; font-weight: bold; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+      </div>
+
       <div class="card">
         <div class="card-title">📋 Liste des Tournois</div>
         <p>Les tournois seront chargés depuis l'API.</p>
@@ -54,6 +58,61 @@
       </div>
 
       <script>
+        function showNotification(message, isSuccess = true) {
+          const notification = document.getElementById('notification');
+          notification.textContent = message;
+          notification.style.display = 'block';
+          notification.style.backgroundColor = isSuccess ? '#10b981' : '#ef4444';
+          notification.style.color = 'white';
+          
+          setTimeout(() => {
+            notification.style.display = 'none';
+          }, 3000);
+        }
+
+        async function createTournament(e) {
+          e.preventDefault();
+          
+          const token = localStorage.getItem('token');
+          if (!token) {
+            showNotification('❌ Vous devez être connecté pour créer un tournoi', false);
+            return;
+          }
+
+          const formData = {
+            name: document.getElementById('tournament-name').value,
+            game: document.getElementById('tournament-game').value,
+            format: document.getElementById('tournament-format').value,
+            maxParticipants: parseInt(document.getElementById('tournament-maxp').value),
+            prizePool: parseFloat(document.getElementById('tournament-pool').value),
+            startDate: new Date(document.getElementById('tournament-start').value).toISOString()
+          };
+
+          try {
+            const response = await fetch('/api/tournaments', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+              showNotification('✅ Tournoi créé avec succès!', true);
+              document.getElementById('create-tournament-form').reset();
+              loadTournaments();
+            } else {
+              showNotification(`❌ Erreur: ${data.message || 'Impossible de créer le tournoi'}`, false);
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            showNotification('❌ Erreur réseau: ' + error.message, false);
+          }
+        }
+
         async function loadTournaments() {
           try {
             const response = await fetch('/api/tournaments/public/all');
@@ -101,6 +160,9 @@
           createSection.style.display = 'block';
           createForm.style.display = 'none';
         }
+
+        // Attach form submit handler
+        document.getElementById('create-tournament-form').addEventListener('submit', createTournament);
 
         loadTournaments();
         updateTournamentUI();
