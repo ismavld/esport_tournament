@@ -37,30 +37,19 @@
       <script>
         async function loadTeams() {
           try {
-            const response = await fetch('/api/teams');
-            let data = await response.json();
+            const response = await fetch('/api/teams/public/all');
+            const teams = await response.json();
             
             const container = document.getElementById('teams-list');
             
-            // Handle both array and object responses
-            if (data && typeof data === 'object') {
-              if (!Array.isArray(data)) {
-                data = data.data || [];
-              }
-            }
-            
-            if (Array.isArray(data)) {
-              if (data.length === 0) {
-                container.innerHTML = '<p style="color: #888;">Aucune équipe disponible pour le moment.</p>';
-              } else {
-                container.innerHTML = data.map(t => `
-                  <div class="team-item" style="border: 1px solid #e5e7eb; padding: 12px; margin-bottom: 8px; border-radius: 6px;">
-                    <strong>${t.name}</strong> <span style="background: #dbeafe; padding: 2px 8px; border-radius: 4px; font-size: 0.85em;">${t.tag}</span>
-                  </div>
-                `).join('');
-              }
+            if (!Array.isArray(teams) || teams.length === 0) {
+              container.innerHTML = '<p style="color: #888;">Aucune équipe disponible pour le moment.</p>';
             } else {
-              container.innerHTML = '<p style="color: #f87171;">Aucune équipe disponible pour le moment.</p>';
+              container.innerHTML = teams.map(t => `
+                <div class="team-item" style="border: 1px solid #e5e7eb; padding: 12px; margin-bottom: 8px; border-radius: 6px;">
+                  <strong>${t.name}</strong> <span style="background: #dbeafe; padding: 2px 8px; border-radius: 4px; font-size: 0.85em;">${t.tag}</span>
+                </div>
+              `).join('');
             }
           } catch (error) {
             console.error('Error:', error);
@@ -77,6 +66,9 @@
           if (token) {
             createSection.style.display = 'none';
             createForm.style.display = 'block';
+          } else {
+            createSection.style.display = 'block';
+            createForm.style.display = 'none';
           }
         }
 

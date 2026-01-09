@@ -9,6 +9,8 @@ import {
 } from '../controllers/tournamentController.js';
 import { authenticate, authorize } from '../middlewares/auth.js';
 import { validate } from '../middlewares/validate.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
+import prisma from '../utils/prisma.js';
 import {
   createTournamentSchema,
   updateTournamentSchema,
@@ -54,6 +56,28 @@ const router = express.Router();
  *         description: List of tournaments
  */
 router.get('/', validate(getTournamentsQuerySchema, 'query'), getAllTournaments);
+
+/**
+ * @swagger
+ * /api/tournaments/public/all:
+ *   get:
+ *     summary: Get all tournaments (public endpoint, no pagination)
+ *     tags: [Tournaments]
+ *     responses:
+ *       200:
+ *         description: List of all tournaments
+ */
+router.get('/public/all', asyncHandler(async (req, res) => {
+  const tournaments = await prisma.tournament.findMany({
+    include: {
+      organizer: {
+        select: { id: true, username: true, email: true },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+  res.json(tournaments);
+}));
 
 /**
  * @swagger

@@ -8,6 +8,8 @@ import {
 } from '../controllers/teamController.js';
 import { authenticate } from '../middlewares/auth.js';
 import { validate } from '../middlewares/validate.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
+import prisma from '../utils/prisma.js';
 import { createTeamSchema, updateTeamSchema } from '../validations/team.js';
 
 const router = express.Router();
@@ -37,6 +39,28 @@ const router = express.Router();
  *         description: Internal server error
  */
 router.get('/', getAllTeams);
+
+/**
+ * @swagger
+ * /api/teams/public/all:
+ *   get:
+ *     summary: Get all teams (public endpoint, no pagination)
+ *     tags: [Teams]
+ *     responses:
+ *       200:
+ *         description: List of all teams
+ */
+router.get('/public/all', asyncHandler(async (req, res) => {
+  const teams = await prisma.team.findMany({
+    include: {
+      captain: {
+        select: { id: true, username: true, email: true },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+  res.json(teams);
+}));
 
 /**
  * @swagger
