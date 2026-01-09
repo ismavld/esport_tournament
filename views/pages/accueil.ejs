@@ -71,15 +71,32 @@
         // Load stats on page load
         async function loadStats() {
           try {
-            const response = await fetch('/api/health');
-            if (response.ok) {
-              console.log('✅ API is running');
+            // Load tournaments count
+            const tournamentsResponse = await fetch('/api/tournaments/public/all');
+            const tournaments = await tournamentsResponse.json();
+            const tournamentsCount = Array.isArray(tournaments) ? tournaments.length : 0;
+            document.getElementById('stat-tournaments').textContent = tournamentsCount;
+
+            // Load teams count
+            const teamsResponse = await fetch('/api/teams/public/all');
+            const teams = await teamsResponse.json();
+            const teamsCount = Array.isArray(teams) ? teams.length : 0;
+            document.getElementById('stat-teams').textContent = teamsCount;
+
+            // Load stats (includes players count)
+            const statsResponse = await fetch('/api/stats');
+            if (statsResponse.ok) {
+              const stats = await statsResponse.json();
+              document.getElementById('stat-players').textContent = stats.totalPlayers || 0;
+              document.getElementById('stat-registrations').textContent = stats.totalRegistrations || 0;
             }
           } catch (error) {
-            console.error('API Error:', error);
+            console.error('Error loading stats:', error);
           }
         }
         loadStats();
+        // Reload stats every 10 seconds
+        setInterval(loadStats, 10000);
       </script>
 
 <%- include('../partials/footer') %>
