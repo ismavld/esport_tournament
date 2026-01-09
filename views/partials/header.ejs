@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title || 'E-Sport Tournaments' %></title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <div class="logo">
+          <span class="logo-icon">🎮</span>
+          <span>E-Sport Tournaments</span>
+        </div>
+        <nav>
+          <a href="/" class="nav-link <%= page === 'home' ? 'active' : '' %>">Accueil</a>
+          <a href="/tournois" class="nav-link <%= page === 'tournaments' ? 'active' : '' %>">Tournois</a>
+          <a href="/equipes" class="nav-link <%= page === 'teams' ? 'active' : '' %>">Équipes</a>
+          <a href="/connexion" class="nav-link <%= page === 'auth' ? 'active' : '' %>">Connexion</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="main-content">

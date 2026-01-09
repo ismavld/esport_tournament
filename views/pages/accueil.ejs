@@ -1,0 +1,70 @@
+<%- include('../partials/header', { page: 'home', title: 'Accueil - E-Sport Tournaments' }) %>
+
+      <div class="hero">
+        <h1>🎮 Bienvenue sur E-Sport Tournaments</h1>
+        <p>Plateforme complète de gestion de tournois e-sport</p>
+        <div class="hero-buttons">
+          <a href="/tournois" class="btn btn-primary">Voir les Tournois</a>
+          <a href="/connexion" class="btn btn-secondary">Se Connecter</a>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat-box">
+          <div class="stat-number" id="stat-tournaments">0</div>
+          <div class="stat-label">Tournois</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number" id="stat-teams">0</div>
+          <div class="stat-label">Équipes</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number" id="stat-players">0</div>
+          <div class="stat-label">Joueurs</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number" id="stat-registrations">0</div>
+          <div class="stat-label">Inscriptions</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">ℹ️ À Propos</div>
+        <p>
+          Cette API REST gère complètement les tournois e-sport avec authentification,
+          gestion d'équipes, et système d'inscriptions.
+        </p>
+        <ul style="margin-top: 16px; margin-left: 20px; line-height: 1.8">
+          <li><strong>Authentification JWT</strong> - Sécurisée avec bcrypt</li>
+          <li><strong>Gestion de Tournois</strong> - CRUD complet + gestion de statut</li>
+          <li><strong>Équipes</strong> - Création et modification avec autorisation</li>
+          <li><strong>Inscriptions</strong> - Système flexible SOLO/TEAM</li>
+          <li><strong>Statistiques</strong> - Métriques détaillées par tournoi</li>
+          <li><strong>Tests</strong> - Suite Vitest avec 23 tests</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📚 Documentation</div>
+        <p>
+          Consultez la <a href="/api-docs" target="_blank" style="color: #6366f1; text-decoration: underline;">documentation API complète</a> 
+          pour découvrir tous les endpoints disponibles.
+        </p>
+      </div>
+
+      <script>
+        // Load stats on page load
+        async function loadStats() {
+          try {
+            const response = await fetch('/api/health');
+            if (response.ok) {
+              console.log('✅ API is running');
+            }
+          } catch (error) {
+            console.error('API Error:', error);
+          }
+        }
+        loadStats();
+      </script>
+
+<%- include('../partials/footer') %>

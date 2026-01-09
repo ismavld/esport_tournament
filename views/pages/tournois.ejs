@@ -1,0 +1,52 @@
+<%- include('../partials/header', { page: 'tournaments', title: 'Tournois - E-Sport Tournaments' }) %>
+
+      <div class="page-header">
+        <h1>🏆 Tournois</h1>
+        <p>Découvrez et gérez tous les tournois e-sport disponibles</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 Liste des Tournois</div>
+        <p>Les tournois seront chargés depuis l'API.</p>
+        <div id="tournaments-list" style="margin-top: 20px;">
+          <p style="color: #888;">Chargement des tournois...</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">➕ Créer un Tournoi</div>
+        <p style="margin-bottom: 20px;">Pour créer un tournoi, vous devez être connecté en tant qu'organisateur.</p>
+        <a href="/connexion" class="btn btn-primary">Se Connecter pour Créer</a>
+      </div>
+
+      <script>
+        async function loadTournaments() {
+          try {
+            const response = await fetch('/api/tournaments');
+            const data = await response.json();
+            
+            const container = document.getElementById('tournaments-list');
+            
+            if (data && Array.isArray(data)) {
+              if (data.length === 0) {
+                container.innerHTML = '<p style="color: #888;">Aucun tournoi disponible pour le moment.</p>';
+              } else {
+                container.innerHTML = data.map(t => `
+                  <div class="tournament-item" style="border: 1px solid #e5e7eb; padding: 12px; margin-bottom: 8px; border-radius: 6px;">
+                    <strong>${t.name}</strong> - ${t.game} (${t.format})
+                  </div>
+                `).join('');
+              }
+            } else {
+              container.innerHTML = '<p style="color: #f87171;">Erreur lors du chargement des tournois.</p>';
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('tournaments-list').innerHTML = '<p style="color: #f87171;">Erreur de connexion à l\'API.</p>';
+          }
+        }
+
+        loadTournaments();
+      </script>
+
+<%- include('../partials/footer') %>

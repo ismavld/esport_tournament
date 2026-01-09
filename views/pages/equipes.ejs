@@ -1,0 +1,52 @@
+<%- include('../partials/header', { page: 'teams', title: 'Équipes - E-Sport Tournaments' }) %>
+
+      <div class="page-header">
+        <h1>👥 Équipes</h1>
+        <p>Gestion et découverte des équipes e-sport</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 Liste des Équipes</div>
+        <p>Les équipes seront chargées depuis l'API.</p>
+        <div id="teams-list" style="margin-top: 20px;">
+          <p style="color: #888;">Chargement des équipes...</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">➕ Créer une Équipe</div>
+        <p style="margin-bottom: 20px;">Créez votre propre équipe et invitez des joueurs à la rejoindre.</p>
+        <a href="/connexion" class="btn btn-primary">Se Connecter pour Créer</a>
+      </div>
+
+      <script>
+        async function loadTeams() {
+          try {
+            const response = await fetch('/api/teams');
+            const data = await response.json();
+            
+            const container = document.getElementById('teams-list');
+            
+            if (data && Array.isArray(data)) {
+              if (data.length === 0) {
+                container.innerHTML = '<p style="color: #888;">Aucune équipe disponible pour le moment.</p>';
+              } else {
+                container.innerHTML = data.map(t => `
+                  <div class="team-item" style="border: 1px solid #e5e7eb; padding: 12px; margin-bottom: 8px; border-radius: 6px;">
+                    <strong>${t.name}</strong> <span style="background: #dbeafe; padding: 2px 8px; border-radius: 4px; font-size: 0.85em;">${t.tag}</span>
+                  </div>
+                `).join('');
+              }
+            } else {
+              container.innerHTML = '<p style="color: #f87171;">Erreur lors du chargement des équipes.</p>';
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('teams-list').innerHTML = '<p style="color: #f87171;">Erreur de connexion à l\'API.</p>';
+          }
+        }
+
+        loadTeams();
+      </script>
+
+<%- include('../partials/footer') %>

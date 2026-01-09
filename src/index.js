@@ -27,23 +27,38 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Configure EJS view engine
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '../views'));
+
 // Serve static files from public directory
 app.use(express.static(path.join(__dirname, '../public')));
 
 // Swagger documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+// Frontend Routes
+app.get('/', (req, res) => {
+  res.render('pages/accueil');
+});
+
+app.get('/tournois', (req, res) => {
+  res.render('pages/tournois');
+});
+
+app.get('/equipes', (req, res) => {
+  res.render('pages/equipes');
+});
+
+app.get('/connexion', (req, res) => {
+  res.render('pages/connexion');
+});
+
 // Routes
 app.get('/api/health', (req, res) => {
   res.json({ status: 'API is running', timestamp: new Date().toISOString() });
 });
 
-// Home route
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
-});
-
-// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tournaments', tournamentRoutes);
 app.use('/api/teams', teamRoutes);
