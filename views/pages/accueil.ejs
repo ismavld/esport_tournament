@@ -37,10 +37,6 @@
           <div class="stat-number" id="stat-players">0</div>
           <div class="stat-label">Joueurs</div>
         </div>
-        <div class="stat-box">
-          <div class="stat-number" id="stat-registrations">0</div>
-          <div class="stat-label">Inscriptions</div>
-        </div>
       </div>
 
       <div class="card">
@@ -88,28 +84,6 @@
             const users = await usersResponse.json();
             const usersCount = Array.isArray(users) ? users.length : 0;
             document.getElementById('stat-players').textContent = usersCount;
-
-            // Load registrations count from all tournaments
-            let totalRegistrations = 0;
-            if (Array.isArray(tournaments) && tournaments.length > 0) {
-              for (const tournament of tournaments) {
-                try {
-                  const regResponse = await fetch(`/api/tournaments/${tournament.id}/registrations`);
-                  if (regResponse.ok) {
-                    const regData = await regResponse.json();
-                    // Handle both paginated and non-paginated responses
-                    if (regData.registrations && Array.isArray(regData.registrations)) {
-                      totalRegistrations += regData.registrations.length;
-                    } else if (Array.isArray(regData)) {
-                      totalRegistrations += regData.length;
-                    }
-                  }
-                } catch (error) {
-                  console.error(`Error loading registrations for tournament ${tournament.id}:`, error);
-                }
-              }
-            }
-            document.getElementById('stat-registrations').textContent = totalRegistrations;
           } catch (error) {
             console.error('Error loading stats:', error);
           }
