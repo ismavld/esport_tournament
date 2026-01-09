@@ -23,11 +23,18 @@
         async function loadTournaments() {
           try {
             const response = await fetch('/api/tournaments');
-            const data = await response.json();
+            let data = await response.json();
             
             const container = document.getElementById('tournaments-list');
             
-            if (data && Array.isArray(data)) {
+            // Handle both array and object responses
+            if (data && typeof data === 'object') {
+              if (!Array.isArray(data)) {
+                data = data.data || [];
+              }
+            }
+            
+            if (Array.isArray(data)) {
               if (data.length === 0) {
                 container.innerHTML = '<p style="color: #888;">Aucun tournoi disponible pour le moment.</p>';
               } else {
@@ -38,7 +45,7 @@
                 `).join('');
               }
             } else {
-              container.innerHTML = '<p style="color: #f87171;">Erreur lors du chargement des tournois.</p>';
+              container.innerHTML = '<p style="color: #f87171;">Aucun tournoi disponible pour le moment.</p>';
             }
           } catch (error) {
             console.error('Error:', error);
