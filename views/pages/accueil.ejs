@@ -83,11 +83,16 @@
             const teamsCount = Array.isArray(teams) ? teams.length : 0;
             document.getElementById('stat-teams').textContent = teamsCount;
 
-            // Load stats (includes players count)
+            // Load users count
+            const usersResponse = await fetch('/api/users');
+            const users = await usersResponse.json();
+            const usersCount = Array.isArray(users) ? users.length : 0;
+            document.getElementById('stat-players').textContent = usersCount;
+
+            // Load registrations count
             const statsResponse = await fetch('/api/stats');
             if (statsResponse.ok) {
               const stats = await statsResponse.json();
-              document.getElementById('stat-players').textContent = stats.totalPlayers || 0;
               document.getElementById('stat-registrations').textContent = stats.totalRegistrations || 0;
             }
           } catch (error) {

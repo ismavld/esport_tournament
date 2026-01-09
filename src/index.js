@@ -18,6 +18,7 @@ import tournamentRoutes from './routes/tournamentRoutes.js';
 import teamRoutes from './routes/teamRoutes.js';
 import registrationRoutes from './routes/registrationRoutes.js';
 import statsRoutes from './routes/statsRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -64,6 +65,7 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/tournaments', tournamentRoutes);
 app.use('/api/teams', teamRoutes);
 app.use('/api/tournaments/:tournamentId/registrations', registrationRoutes);
