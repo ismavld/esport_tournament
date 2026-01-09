@@ -15,8 +15,42 @@
 
       <div class="card">
         <div class="card-title">➕ Créer un Tournoi</div>
-        <p style="margin-bottom: 20px;">Pour créer un tournoi, vous devez être connecté en tant qu'organisateur.</p>
-        <a href="/connexion" class="btn btn-primary">Se Connecter pour Créer</a>
+        <div id="tournament-create">
+          <p style="margin-bottom: 20px;">Pour créer un tournoi, vous devez être connecté en tant qu'organisateur.</p>
+          <a href="/connexion" class="btn btn-primary">Se Connecter pour Créer</a>
+        </div>
+        <div id="tournament-create-form" style="display: none;">
+          <form id="create-tournament-form">
+            <div class="form-group">
+              <label for="tournament-name">Nom du Tournoi:</label>
+              <input type="text" id="tournament-name" name="name" required />
+            </div>
+            <div class="form-group">
+              <label for="tournament-game">Jeu:</label>
+              <input type="text" id="tournament-game" name="game" placeholder="ex: Counter-Strike 2" required />
+            </div>
+            <div class="form-group">
+              <label for="tournament-format">Format:</label>
+              <select id="tournament-format" name="format" required>
+                <option value="SOLO">Solo</option>
+                <option value="TEAM">Équipe</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="tournament-maxp">Participants Max:</label>
+              <input type="number" id="tournament-maxp" name="maxParticipants" min="1" required />
+            </div>
+            <div class="form-group">
+              <label for="tournament-pool">Prize Pool:</label>
+              <input type="number" id="tournament-pool" name="prizePool" min="0" step="0.01" required />
+            </div>
+            <div class="form-group">
+              <label for="tournament-start">Date de Début:</label>
+              <input type="datetime-local" id="tournament-start" name="startDate" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Créer le Tournoi</button>
+          </form>
+        </div>
       </div>
 
       <script>
@@ -41,6 +75,7 @@
                 container.innerHTML = data.map(t => `
                   <div class="tournament-item" style="border: 1px solid #e5e7eb; padding: 12px; margin-bottom: 8px; border-radius: 6px;">
                     <strong>${t.name}</strong> - ${t.game} (${t.format})
+                    <br><small style="color: #666;">Max: ${t.maxParticipants} | Prize Pool: $${t.prizePool}</small>
                   </div>
                 `).join('');
               }
@@ -53,7 +88,28 @@
           }
         }
 
+        function updateTournamentUI() {
+          const token = localStorage.getItem('token');
+          const user = localStorage.getItem('user');
+          
+          const createSection = document.getElementById('tournament-create');
+          const createForm = document.getElementById('tournament-create-form');
+          
+          if (token && user) {
+            const userObj = JSON.parse(user);
+            if (userObj.role === 'ORGANIZER' || userObj.role === 'ADMIN') {
+              createSection.style.display = 'none';
+              createForm.style.display = 'block';
+            }
+          }
+        }
+
         loadTournaments();
+        updateTournamentUI();
+        window.addEventListener('storage', () => {
+          loadTournaments();
+          updateTournamentUI();
+        });
       </script>
 
 <%- include('../partials/footer') %>

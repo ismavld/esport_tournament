@@ -5,9 +5,24 @@
         <p>Plateforme complète de gestion de tournois e-sport</p>
         <div class="hero-buttons">
           <a href="/tournois" class="btn btn-primary">Voir les Tournois</a>
-          <a href="/connexion" class="btn btn-secondary">Se Connecter</a>
+          <a href="/connexion" id="login-btn" class="btn btn-secondary">Se Connecter</a>
         </div>
       </div>
+
+      <script>
+        // Hide login button if already logged in
+        function updateHeroButtons() {
+          const token = localStorage.getItem('token');
+          const loginBtn = document.getElementById('login-btn');
+          if (token) {
+            loginBtn.style.display = 'none';
+          } else {
+            loginBtn.style.display = 'inline-block';
+          }
+        }
+        updateHeroButtons();
+        window.addEventListener('storage', updateHeroButtons);
+      </script>
 
       <div class="stats">
         <div class="stat-box">

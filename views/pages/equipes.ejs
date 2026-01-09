@@ -15,8 +15,23 @@
 
       <div class="card">
         <div class="card-title">➕ Créer une Équipe</div>
-        <p style="margin-bottom: 20px;">Créez votre propre équipe et invitez des joueurs à la rejoindre.</p>
-        <a href="/connexion" class="btn btn-primary">Se Connecter pour Créer</a>
+        <div id="team-create">
+          <p style="margin-bottom: 20px;">Créez votre propre équipe et invitez des joueurs à la rejoindre.</p>
+          <a href="/connexion" class="btn btn-primary">Se Connecter pour Créer</a>
+        </div>
+        <div id="team-create-form" style="display: none;">
+          <form id="create-team-form">
+            <div class="form-group">
+              <label for="team-name">Nom de l'Équipe:</label>
+              <input type="text" id="team-name" name="name" required />
+            </div>
+            <div class="form-group">
+              <label for="team-tag">Tag (Sigle):</label>
+              <input type="text" id="team-tag" name="tag" placeholder="ex: FNATIC" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Créer l'Équipe</button>
+          </form>
+        </div>
       </div>
 
       <script>
@@ -53,7 +68,24 @@
           }
         }
 
+        function updateTeamUI() {
+          const token = localStorage.getItem('token');
+          
+          const createSection = document.getElementById('team-create');
+          const createForm = document.getElementById('team-create-form');
+          
+          if (token) {
+            createSection.style.display = 'none';
+            createForm.style.display = 'block';
+          }
+        }
+
         loadTeams();
+        updateTeamUI();
+        window.addEventListener('storage', () => {
+          loadTeams();
+          updateTeamUI();
+        });
       </script>
 
 <%- include('../partials/footer') %>
